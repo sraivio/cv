@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>CV</title>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body>
+		<div class="scene scene-summer-day scene-day" id="scene" aria-hidden="true">
+			<!-- Day elements -->
+			<div class="pixel sun day-only"></div>
+
+			<div class="pixel cloud day-only cloud-l-1"></div>
+			<div class="pixel cloud day-only cloud-l-2"></div>
+			<div class="pixel cloud day-only cloud-r-1"></div>
+			<div class="pixel cloud day-only cloud-r-2"></div>
+			<div class="pixel cloud day-only cloud-l-3"></div>
+			<div class="pixel cloud day-only cloud-r-3"></div>
+
+			<div class="pixel bird day-only bird-l"></div>
+			<div class="pixel bird day-only bird-r"></div>
+			<div class="pixel bird day-only bird-l-2"></div>
+
+			<!-- Mountain layers (back to front) -->
+			<div class="pixel mountain day-only mountain-far-l"></div>
+			<div class="pixel mountain day-only mountain-far-r"></div>
+			<div class="pixel mountain day-only mountain-mid-l"></div>
+			<div class="pixel mountain day-only mountain-mid-r"></div>
+			<div class="pixel hill day-only hill-l"></div>
+			<div class="pixel hill day-only hill-r"></div>
+
+			<div class="pixel grassband day-only"></div>
+
+			<div class="pixel tree day-only tree-l"></div>
+			<div class="pixel tree day-only tree-r"></div>
+			<div class="pixel tree day-only tree-l-2"></div>
+			<div class="pixel tree day-only tree-r-2"></div>
+
+			<div class="pixel bush day-only bush-l"></div>
+			<div class="pixel bush day-only bush-r"></div>
+
+			<div class="pixel flower day-only flower-l"></div>
+			<div class="pixel flower day-only flower-r"></div>
+			<div class="pixel flower day-only flower-l2"></div>
+			<div class="pixel flower day-only flower-r2"></div>
+			<div class="pixel flower day-only flower-l3"></div>
+			<div class="pixel flower day-only flower-r3"></div>
+
+			<div class="pixel leaf day-only leaf-l"></div>
+			<div class="pixel leaf day-only leaf-r"></div>
+			<div class="pixel leaf day-only leaf-l2"></div>
+			<div class="pixel leaf day-only leaf-r2"></div>
+
+			<div class="pixel snowbank day-only snowbank-l"></div>
+			<div class="pixel snowbank day-only snowbank-r"></div>
+			<div class="pixel snowflake day-only snowflake-1"></div>
+			<div class="pixel snowflake day-only snowflake-2"></div>
+			<div class="pixel snowflake day-only snowflake-3"></div>
+			<div class="pixel snowflake day-only snowflake-4"></div>
+
+			<!-- Night elements -->
+			<div class="pixel moon night-only"></div>
+			<div class="pixel moon-glow night-only"></div>
+
+			<div class="pixel star night-only star-1"></div>
+			<div class="pixel star night-only star-2"></div>
+			<div class="pixel star night-only star-3"></div>
+			<div class="pixel star night-only star-4"></div>
+			<div class="pixel star night-only star-5"></div>
+			<div class="pixel star night-only star-6"></div>
+			<div class="pixel star night-only star-7"></div>
+			<div class="pixel star night-only star-8"></div>
+			<div class="pixel star night-only star-9"></div>
+			<div class="pixel star night-only star-10"></div>
+			<div class="pixel star night-only star-low-1"></div>
+			<div class="pixel star night-only star-low-2"></div>
+
+			<div class="pixel star-big night-only star-big-1"></div>
+			<div class="pixel star-big night-only star-big-2"></div>
+
+			<div class="pixel night-cloud night-only night-cloud-l"></div>
+			<div class="pixel night-cloud night-only night-cloud-r"></div>
+			<div class="pixel night-cloud night-only night-cloud-l-2"></div>
+
+			<div class="pixel shooting-star night-only"></div>
+
+			<!-- Night mountains/skyline layers -->
+			<div class="pixel night-mountain night-only night-mountain-far-l"></div>
+			<div class="pixel night-mountain night-only night-mountain-far-r"></div>
+			<div class="pixel night-mountain night-only night-mountain-mid-l"></div>
+			<div class="pixel night-mountain night-only night-mountain-mid-r"></div>
+			<div class="pixel skyline night-only"></div>
+
+			<div class="pixel aurora night-only"></div>
+
+			<div class="pixel firefly night-only firefly-1"></div>
+			<div class="pixel firefly night-only firefly-2"></div>
+			<div class="pixel firefly night-only firefly-3"></div>
+			<div class="pixel firefly night-only firefly-4"></div>
+
+			<div class="pixel petal night-only petal-l"></div>
+			<div class="pixel petal night-only petal-r"></div>
+		</div>
+
+		<main class="layout">
+			<article class="cv-panel" id="cv-panel">
+				<header class="card-top">
+					<div class="identity-banner">
+						<h1>Your Name</h1>
+						<p>Role / Professional Title</p>
+					</div>
+
+					<nav class="tab-list" aria-label="CV sections" role="tablist">
+						<button class="tab-button is-active" type="button" role="tab" aria-selected="true" aria-controls="tab-profile" id="btn-profile" data-tab="profile">Profile</button>
+						<button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-experience" id="btn-experience" data-tab="experience">Experience</button>
+						<button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-skills" id="btn-skills" data-tab="skills">Skills</button>
+					</nav>
+				</header>
+
+				<div class="tab-content" id="tab-content">
+					<section class="tab-panel is-active" id="tab-profile" role="tabpanel" aria-labelledby="btn-profile" data-tab-panel="profile">
+						<h2>Profile</h2>
+						<p>
+							Short profile text placeholder.
+						</p>
+					</section>
+
+					<section class="tab-panel" id="tab-experience" role="tabpanel" aria-labelledby="btn-experience" data-tab-panel="experience">
+						<h2>Experience</h2>
+						<ul>
+							<li>Experience entry placeholder</li>
+							<li>Experience entry placeholder</li>
+						</ul>
+					</section>
+
+					<section class="tab-panel" id="tab-skills" role="tabpanel" aria-labelledby="btn-skills" data-tab-panel="skills">
+						<h2>Skills</h2>
+						<ul>
+							<li>Skill placeholder</li>
+							<li>Skill placeholder</li>
+							<li>Skill placeholder</li>
+						</ul>
+					</section>
+				</div>
+
+				<footer class="card-bottom theme-banner">
+					<p id="theme-note">Theme is based on Helsinki current season and time.</p>
+					<button type="button" id="shuffle-theme" class="pixel-button">Next Scene</button>
+				</footer>
+			</article>
+		</main>
+
+		<script src="app.js"></script>
+	</body>
+</html>

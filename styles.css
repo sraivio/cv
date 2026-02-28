@@ -1,0 +1,1165 @@
+
+/* =========================================
+   Pixel-Art Seasonal Theme System (8 themes)
+   - Scales to more themes & real-time weather
+   - Keeps dense graphics to the sides of center panel
+   - Mobile & desktop sensitive
+   - Rich but lightweight (no heavy assets)
+   ========================================= */
+
+/* -----------------------------
+   LAYERS
+------------------------------*/
+@layer reset, base, layout, themes, scenes, utilities;
+
+/* -----------------------------
+   RESET
+------------------------------*/
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+}
+
+/* -----------------------------
+   BASE
+------------------------------*/
+@layer base {
+  :root {
+    /* Layout & safe zone */
+    --panel-max-w: 920px;
+    --panel-pad: clamp(1rem, 3vw, 2rem);
+    --panel-viewport-gap: 50px;
+    --safe-center-w: min(var(--panel-max-w), 92vw);
+    --scene-scale: 1;          /* scaled down on mobile */
+    --edge-padding: 2vw;       /* breathing room on edges */
+
+    /* Semantic UI tokens (overridden by themes) */
+    --panel-bg: #ffffff;
+    --panel-border: #cccccc;
+    --text-color: #111111;
+
+    /* Scene tokens - Day defaults */
+    --sky-top: #4ab8ff;
+    --sky-mid: #7dcfff;
+    --sky-horizon: #b8e8b0;
+    --sky-bottom: #88d888;
+    --sun: #ffdd00;
+    --sun-glow: #ffcc00;
+    --cloud-light: #ffffff;
+    --cloud-shadow: #d8f0ff;
+    --ground-light: #70c870;
+    --ground-mid: #5cb85c;
+    --ground-dark: #48a848;
+    --mountain-far: #4a8855;
+    --mountain-mid: #5a9865;
+    --hill-front: #70a870;
+    --tree-top: #2a7a3a;
+    --tree-trunk: #7a5830;
+    --bush: #3a8a4a;
+    --flower-a: #ff5588;
+    --flower-b: #ffdd55;
+    --stem: #4a8a4a;
+    --bird: #2a4a6a;
+
+    /* Night defaults */
+    --night-top: #10082a;
+    --night-mid: #201048;
+    --night-bottom: #302060;
+    --night-accent-a: rgba(150, 100, 200, 0.2);
+    --night-accent-b: rgba(100, 80, 160, 0.18);
+    --moon: #fff8ee;
+    --moon-rim-b: #ffffff;
+    --stars: #f0e0ff;
+    --night-cloud-a: #30205a;
+    --night-cloud-b: #402870;
+    --night-mountain-far: #100820;
+    --night-mountain-mid: #181030;
+    --skyline-a: #18082a;
+    --skyline-b: #200c38;
+    --skyline-c: #281048;
+    --window-glow-a: rgba(255, 200, 100, 0.65);
+    --window-glow-b: rgba(255, 200, 100, 0.45);
+
+    /* Z-index */
+    --z-scene: 1;
+    --z-layout: 2;
+  }
+
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    color: var(--text-color);
+    background: #0000; /* scene paints the backdrop */
+  }
+}
+
+/* -----------------------------
+   LAYOUT
+------------------------------*/
+@layer layout {
+  .layout {
+    position: relative;
+    z-index: var(--z-layout);
+    min-height: 100vh;
+  }
+
+  .cv-panel {
+    position: fixed;
+    top: var(--panel-viewport-gap);
+    bottom: var(--panel-viewport-gap);
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(var(--panel-max-w), calc(100vw - (var(--panel-viewport-gap) * 2)));
+    border: 14px solid var(--panel-border);
+    border-radius: 0.35rem;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel-bg);
+    color: var(--text-color);
+    overflow: hidden;
+    box-shadow:
+      0 18px 48px rgba(0, 0, 0, 0.18),
+      0 6px 18px rgba(0, 0, 0, 0.10);
+  }
+
+  .card-top,
+  .card-bottom {
+    flex: 0 0 auto;
+    padding: 0.8rem var(--panel-pad);
+    background: var(--panel-bg);
+  }
+
+  .card-top {
+    border-bottom: 8px solid var(--panel-border);
+  }
+
+  .card-bottom {
+    border-top: 8px solid var(--panel-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .identity-banner h1,
+  .identity-banner p,
+  .tab-panel h2 {
+    margin: 0;
+  }
+
+  .identity-banner p {
+    opacity: 0.9;
+  }
+
+  .tab-list {
+    margin-top: 0.7rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .tab-button {
+    border: 3px solid var(--panel-border);
+    background: var(--panel-bg);
+    color: var(--text-color);
+    font: inherit;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.25rem 0.65rem;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--panel-border);
+  }
+
+  .tab-button.is-active {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 var(--panel-border);
+  }
+
+  .tab-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--panel-pad);
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.is-active {
+    display: block;
+  }
+
+  .tab-panel h2 {
+    margin-bottom: 0.75rem;
+  }
+
+  .theme-banner p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  .pixel-button {
+    border: 3px solid var(--panel-border);
+    background: var(--panel-bg);
+    color: var(--text-color);
+    font: inherit;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.75rem;
+    cursor: pointer;
+    box-shadow:
+      3px 0 0 var(--panel-border),
+      0 3px 0 var(--panel-border),
+      3px 3px 0 var(--panel-border);
+  }
+
+  .pixel-button:active {
+    transform: translate(1px, 1px);
+    box-shadow:
+      2px 0 0 var(--panel-border),
+      0 2px 0 var(--panel-border),
+      2px 2px 0 var(--panel-border);
+  }
+
+  /* Pixel-art scene container */
+  .scene {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-scene);
+    overflow: hidden;
+    image-rendering: pixelated;
+    pointer-events: none;
+  }
+
+  /* Keep the coolest graphics to left and right:
+     We'll decorate outside the safe center band */
+  .scene::before,
+  .scene::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: calc((100vw - var(--safe-center-w)) / 2 - var(--edge-padding));
+    /* These pseudo-elements don't draw, but reserve conceptual "zones"
+       for placing left/right elements without crossing the center. */
+  }
+  .scene::before { left: var(--edge-padding); }
+  .scene::after { right: var(--edge-padding); }
+
+  /* Base for all sprites/pixels */
+  .pixel {
+    position: absolute;
+    transform-origin: top left;
+    transform: scale(calc(1 * var(--scene-scale)));
+  }
+
+  /* Mobile scaling and tighter borders */
+  @media (max-width: 700px) {
+    :root { --scene-scale: 0.7; }
+    .cv-panel {
+      border-width: 10px;
+    }
+
+    .card-top {
+      border-bottom-width: 6px;
+    }
+
+    .card-bottom {
+      border-top-width: 6px;
+    }
+
+    .tab-content {
+      padding: 0.85rem;
+    }
+  }
+}
+
+/* -----------------------------
+   THEMES (UI tokens for panel)
+   Classes applied to <html> or <body>:
+   .theme-[season]-[day|night]
+------------------------------*/
+@layer themes {
+  /* SPRING */
+  .theme-spring-day    { --panel-bg: #e8f7df; --panel-border: #7dbc5d; --text-color: #2b2a24; }
+  .theme-spring-night  { --panel-bg: #394d48; --panel-border: #a49bd8; --text-color: #e5fff4; }
+
+  /* SUMMER */
+  .theme-summer-day    { --panel-bg: #f5e5ab; --panel-border: #d88c35; --text-color: #2b2418; }
+  .theme-summer-night  { --panel-bg: #41036b; --panel-border: #a666d1; --text-color: #f3e7ff; }
+
+  /* AUTUMN */
+  .theme-autumn-day    { --panel-bg: #f7e3c3; --panel-border: #c76a2a; --text-color: #382516; }
+  .theme-autumn-night  { --panel-bg: #3a1f13; --panel-border: #d7974a; --text-color: #ffe8d6; }
+
+  /* WINTER */
+  .theme-winter-day    { --panel-bg: #e0f2ff; --panel-border: #6ab6ff; --text-color: #1f2e40; }
+  .theme-winter-night  { --panel-bg: #0a1830; --panel-border: #8ac7ff; --text-color: #e8f6ff; }
+
+  /* Optional: if user hasn't chosen a theme, respect OS dark mode */
+  @media (prefers-color-scheme: dark) {
+    :root:not([class*="theme-"]) {
+      --panel-bg: #161a22;
+      --panel-border: #3a4a6b;
+      --text-color: #e6edf5;
+    }
+  }
+}
+
+/* -----------------------------
+   SCENE: Common structure
+   - Build day/night elements once
+   - Seasons inject colors and positions
+------------------------------*/
+@layer scenes {
+  /* Base day sky (overridden by seasonal colors) */
+  .scene-day {
+    background:
+      linear-gradient(to bottom,
+        var(--sky-top) 0%,
+        var(--sky-mid) 35%,
+        var(--sky-horizon) 65%,
+        var(--sky-bottom) 100%);
+  }
+
+  /* Base night sky (overridden by seasonal colors) */
+  .scene-night {
+    background:
+      radial-gradient(circle at 20% 16%, var(--night-accent-a), transparent 45%),
+      radial-gradient(circle at 78% 25%, var(--night-accent-b), transparent 42%),
+      linear-gradient(to bottom, var(--night-top) 0%, var(--night-mid) 60%, var(--night-bottom) 100%);
+  }
+
+  /* Element visibility toggles */
+  .scene .day-only { display: none; }
+  .scene .night-only { display: none; }
+  .scene-day .day-only { display: block; }
+  .scene-night .night-only { display: block; }
+
+  /* ============================================
+     DAY ELEMENTS
+     ============================================ */
+
+  /* Sun with warm glow */
+  .sun.day-only {
+    width: 14px; height: 14px;
+    background: var(--sun);
+    border-radius: 0;
+    box-shadow:
+      0 -3px 0 0 var(--sun),
+      0  3px 0 0 var(--sun),
+     -3px  0 0 0 var(--sun),
+      3px  0 0 0 var(--sun),
+     -2px -2px 0 0 var(--sun-glow),
+      2px -2px 0 0 var(--sun-glow),
+     -2px  2px 0 0 var(--sun-glow),
+      2px  2px 0 0 var(--sun-glow),
+      0 0 0 5px var(--sun-outer, rgba(255,220,100,0.25)),
+      0 0 0 10px var(--sun-halo, rgba(255,220,100,0.12));
+    transform: scale(calc(6 * var(--scene-scale)));
+    top: 6%; right: 8%;
+    z-index: 10;
+  }
+
+  /* Clouds - fluffy pixel style */
+  .cloud.day-only {
+    width: 20px; height: 10px;
+    background: var(--cloud-light);
+    box-shadow:
+      4px 0 0 var(--cloud-light),
+      8px 0 0 var(--cloud-light),
+      12px -1px 0 var(--cloud-light),
+      2px -3px 0 var(--cloud-light),
+      6px -4px 0 var(--cloud-light),
+      10px -3px 0 var(--cloud-light),
+      14px -2px 0 var(--cloud-light),
+      1px 2px 0 var(--cloud-shadow),
+      5px 2px 0 var(--cloud-shadow),
+      9px 2px 0 var(--cloud-shadow),
+      13px 1px 0 var(--cloud-shadow);
+    transform: scale(calc(5 * var(--scene-scale)));
+    z-index: 5;
+  }
+
+  /* Cloud positions */
+  .cloud-l-1 { top: 12%; left: 2%; }
+  .cloud-l-2 { top: 22%; left: 6%; transform: scale(calc(4.2 * var(--scene-scale))); }
+  .cloud-l-3 { top: 32%; left: -1%; transform: scale(calc(3.8 * var(--scene-scale))); }
+  .cloud-r-1 { top: 10%; right: 18%; }
+  .cloud-r-2 { top: 20%; right: 3%; transform: scale(calc(4.5 * var(--scene-scale))); }
+  .cloud-r-3 { top: 28%; right: 10%; transform: scale(calc(3.5 * var(--scene-scale))); }
+
+  /* Birds - small V shapes */
+  .bird.day-only {
+    width: 3px; height: 2px;
+    background: var(--bird, #3a5a7a);
+    box-shadow:
+      3px 1px 0 var(--bird, #3a5a7a),
+      6px 0 0 var(--bird, #3a5a7a),
+      -1px 1px 0 var(--bird, #3a5a7a),
+      -3px 0 0 var(--bird, #3a5a7a);
+    transform: scale(calc(2.5 * var(--scene-scale)));
+    z-index: 6;
+  }
+  .bird-l { top: 24%; left: 20%; }
+  .bird-r { top: 18%; right: 25%; }
+  .bird-l-2 { top: 28%; left: 15%; transform: scale(calc(2 * var(--scene-scale))); }
+
+  /* Far mountains (back layer) */
+  .mountain.day-only {
+    z-index: 2;
+  }
+
+  .mountain-far-l {
+    width: 180px; height: 120px;
+    bottom: 22%; left: -5%;
+    background: var(--mountain-far);
+    clip-path: polygon(
+      0% 100%, 15% 65%, 30% 40%, 45% 55%, 55% 30%, 70% 50%, 85% 35%, 100% 60%, 100% 100%
+    );
+    transform: scale(calc(2.5 * var(--scene-scale)));
+  }
+
+  .mountain-far-r {
+    width: 180px; height: 120px;
+    bottom: 22%; right: -5%;
+    background: var(--mountain-far);
+    clip-path: polygon(
+      0% 60%, 15% 35%, 30% 50%, 45% 25%, 60% 45%, 75% 30%, 90% 55%, 100% 100%, 0% 100%
+    );
+    transform: scale(calc(2.5 * var(--scene-scale)));
+  }
+
+  /* Mid mountains */
+  .mountain-mid-l {
+    width: 160px; height: 100px;
+    bottom: 18%; left: 0%;
+    background: var(--mountain-mid);
+    clip-path: polygon(
+      0% 100%, 20% 50%, 40% 70%, 55% 35%, 75% 60%, 100% 45%, 100% 100%
+    );
+    transform: scale(calc(2.5 * var(--scene-scale)));
+    z-index: 3;
+  }
+
+  .mountain-mid-r {
+    width: 160px; height: 100px;
+    bottom: 18%; right: 0%;
+    background: var(--mountain-mid);
+    clip-path: polygon(
+      0% 45%, 25% 60%, 45% 35%, 60% 70%, 80% 50%, 100% 100%, 0% 100%
+    );
+    transform: scale(calc(2.5 * var(--scene-scale)));
+    z-index: 3;
+  }
+
+  /* Front hills */
+  .hill.day-only {
+    width: 140px; height: 80px;
+    z-index: 4;
+    transform: scale(calc(2.5 * var(--scene-scale)));
+  }
+
+  .hill-l {
+    bottom: 12%; left: 5%;
+    background: var(--hill-front);
+    clip-path: polygon(
+      0% 100%, 10% 70%, 30% 45%, 50% 60%, 70% 40%, 90% 65%, 100% 100%
+    );
+  }
+
+  .hill-r {
+    bottom: 12%; right: 5%;
+    background: var(--hill-front);
+    clip-path: polygon(
+      0% 100%, 10% 65%, 30% 40%, 50% 60%, 70% 45%, 90% 70%, 100% 100%
+    );
+  }
+
+  /* Grass band at bottom */
+  .grassband.day-only {
+    position: absolute;
+    left: 0; right: 0; bottom: 0; height: 18%;
+    background:
+      linear-gradient(to bottom,
+        var(--ground-light) 0%,
+        var(--ground-mid, var(--ground-light)) 40%,
+        var(--ground-dark) 100%);
+    z-index: 5;
+  }
+
+  /* Trees - pixel art style */
+  .tree.day-only {
+    width: 20px; height: 32px;
+    z-index: 7;
+  }
+
+  .tree-l {
+    bottom: 14%; left: 6%;
+    background:
+      linear-gradient(to bottom, var(--tree-top) 0% 60%, transparent 60%),
+      linear-gradient(to bottom, transparent 60%, var(--tree-trunk) 60% 100%);
+    clip-path: polygon(
+      50% 0%, 75% 18%, 60% 18%, 90% 38%, 70% 38%,
+      100% 58%, 65% 58%, 65% 100%, 35% 100%, 35% 58%,
+      0% 58%, 30% 38%, 10% 38%, 40% 18%, 25% 18%
+    );
+    transform: scale(calc(8 * var(--scene-scale)));
+  }
+
+  .tree-r {
+    bottom: 14%; right: 7%;
+    background:
+      linear-gradient(to bottom, var(--tree-top) 0% 60%, transparent 60%),
+      linear-gradient(to bottom, transparent 60%, var(--tree-trunk) 60% 100%);
+    clip-path: polygon(
+      50% 0%, 75% 18%, 60% 18%, 90% 38%, 70% 38%,
+      100% 58%, 65% 58%, 65% 100%, 35% 100%, 35% 58%,
+      0% 58%, 30% 38%, 10% 38%, 40% 18%, 25% 18%
+    );
+    transform: scale(calc(8 * var(--scene-scale)));
+  }
+
+  .tree-l-2 {
+    bottom: 13%; left: 16%;
+    background:
+      linear-gradient(to bottom, var(--tree-top-alt, var(--tree-top)) 0% 60%, transparent 60%),
+      linear-gradient(to bottom, transparent 60%, var(--tree-trunk) 60% 100%);
+    clip-path: polygon(
+      50% 0%, 75% 18%, 60% 18%, 90% 38%, 70% 38%,
+      100% 58%, 65% 58%, 65% 100%, 35% 100%, 35% 58%,
+      0% 58%, 30% 38%, 10% 38%, 40% 18%, 25% 18%
+    );
+    transform: scale(calc(5.5 * var(--scene-scale)));
+  }
+
+  .tree-r-2 {
+    bottom: 13%; right: 17%;
+    background:
+      linear-gradient(to bottom, var(--tree-top-alt, var(--tree-top)) 0% 60%, transparent 60%),
+      linear-gradient(to bottom, transparent 60%, var(--tree-trunk) 60% 100%);
+    clip-path: polygon(
+      50% 0%, 75% 18%, 60% 18%, 90% 38%, 70% 38%,
+      100% 58%, 65% 58%, 65% 100%, 35% 100%, 35% 58%,
+      0% 58%, 30% 38%, 10% 38%, 40% 18%, 25% 18%
+    );
+    transform: scale(calc(5.5 * var(--scene-scale)));
+  }
+
+  /* Bushes */
+  .bush.day-only {
+    width: 20px; height: 12px;
+    background: var(--bush, var(--tree-top));
+    clip-path: polygon(
+      10% 100%, 5% 60%, 20% 30%, 40% 50%, 50% 20%, 60% 50%, 80% 30%, 95% 60%, 90% 100%
+    );
+    transform: scale(calc(4 * var(--scene-scale)));
+    z-index: 6;
+  }
+  .bush-l { bottom: 12%; left: 22%; }
+  .bush-r { bottom: 12%; right: 24%; }
+
+  /* Flowers */
+  .flower.day-only {
+    width: 4px; height: 4px;
+    background: var(--flower-a);
+    box-shadow:
+      2px 0 0 var(--flower-b),
+      0 2px 0 var(--flower-b),
+      -2px 0 0 var(--flower-b),
+      0 -2px 0 var(--flower-b),
+      0 4px 0 var(--stem),
+      0 6px 0 var(--stem);
+    transform: scale(calc(3 * var(--scene-scale)));
+    z-index: 8;
+  }
+  .flower-l { bottom: 5%; left: 25%; }
+  .flower-r { bottom: 6%; right: 28%; }
+  .flower-l2 { bottom: 7%; left: 12%; transform: scale(calc(2.5 * var(--scene-scale))); }
+  .flower-r2 { bottom: 5%; right: 14%; transform: scale(calc(2.5 * var(--scene-scale))); }
+  .flower-l3 { bottom: 4%; left: 30%; transform: scale(calc(2 * var(--scene-scale))); }
+  .flower-r3 { bottom: 8%; right: 34%; transform: scale(calc(2 * var(--scene-scale))); }
+
+  /* Falling leaves */
+  .leaf.day-only {
+    width: 3px; height: 3px;
+    background: var(--leaf, #c96);
+    transform: rotate(35deg) scale(calc(2 * var(--scene-scale)));
+    z-index: 9;
+    display: none; /* Only visible in autumn */
+  }
+  .leaf-l { top: 30%; left: 12%; }
+  .leaf-r { top: 25%; right: 10%; }
+  .leaf-l2 { top: 40%; left: 18%; transform: rotate(-20deg) scale(calc(1.8 * var(--scene-scale))); }
+  .leaf-r2 { top: 35%; right: 15%; transform: rotate(55deg) scale(calc(1.8 * var(--scene-scale))); }
+
+  /* Snow elements */
+  .snowbank.day-only {
+    width: 50px; height: 15px;
+    background: var(--snow, #f0f6ff);
+    clip-path: polygon(0% 100%, 5% 40%, 20% 60%, 40% 30%, 60% 50%, 80% 25%, 95% 55%, 100% 100%);
+    transform: scale(calc(3 * var(--scene-scale)));
+    z-index: 7;
+    display: none; /* Only visible in winter */
+  }
+  .snowbank-l { bottom: 11%; left: 10%; }
+  .snowbank-r { bottom: 10%; right: 12%; }
+
+  .snowflake.day-only {
+    width: 3px; height: 3px;
+    background: var(--snowflake, #fff);
+    box-shadow: 1px 1px 0 var(--snowflake, #fff);
+    transform: scale(calc(1.5 * var(--scene-scale)));
+    z-index: 10;
+    display: none; /* Only visible in winter */
+  }
+  .snowflake-1 { top: 20%; left: 15%; }
+  .snowflake-2 { top: 35%; left: 8%; }
+  .snowflake-3 { top: 25%; right: 12%; }
+  .snowflake-4 { top: 40%; right: 18%; }
+
+  /* ============================================
+     NIGHT ELEMENTS
+     ============================================ */
+
+  /* Moon - crescent shape with hollow facing center (left side) */
+  .moon.night-only {
+    width: 28px; height: 28px;
+    background: radial-gradient(
+      circle at 35% 50%,
+      transparent 0%,
+      transparent 48%,
+      var(--moon) 50%,
+      var(--moon) 100%
+    );
+    box-shadow:
+      0 0 0 6px var(--moon-glow-inner, rgba(255,250,240,0.12)),
+      0 0 0 14px var(--moon-glow-outer, rgba(255,250,240,0.06));
+    border-radius: 50%;
+    transform: scale(calc(6 * var(--scene-scale)));
+    top: 6%; right: 10%;
+    z-index: 10;
+  }
+
+  .moon-glow.night-only {
+    width: 90px; height: 90px;
+    top: 2%; right: 5%;
+    background: radial-gradient(circle, var(--moon-halo, rgba(255,250,240,0.15)) 0%, transparent 65%);
+    transform: scale(calc(2.5 * var(--scene-scale)));
+    z-index: 9;
+  }
+
+  /* Stars - various sizes */
+  .star.night-only {
+    width: 2px; height: 2px;
+    background: var(--stars);
+    box-shadow:
+      0 -1px 0 var(--stars),
+      0 1px 0 var(--stars),
+      -1px 0 0 var(--stars),
+      1px 0 0 var(--stars);
+    transform: scale(calc(2 * var(--scene-scale)));
+    z-index: 5;
+  }
+
+  .star-1 { top: 12%; left: 8%; }
+  .star-2 { top: 18%; left: 25%; }
+  .star-3 { top: 10%; right: 25%; }
+  .star-4 { top: 25%; left: 18%; }
+  .star-5 { top: 8%; right: 35%; }
+  .star-6 { top: 22%; right: 15%; }
+  .star-7 { top: 15%; left: 35%; }
+  .star-8 { top: 30%; left: 10%; }
+  .star-9 { top: 28%; right: 30%; }
+  .star-10 { top: 6%; left: 15%; }
+  .star-low-1 { top: 45%; left: 6%; transform: scale(calc(1.5 * var(--scene-scale))); }
+  .star-low-2 { top: 42%; right: 8%; transform: scale(calc(1.5 * var(--scene-scale))); }
+
+  /* Bigger decorative stars */
+  .star-big.night-only {
+    width: 4px; height: 4px;
+    background: var(--star-bright, var(--stars));
+    box-shadow:
+      0 -2px 0 var(--star-bright, var(--stars)),
+      0 2px 0 var(--star-bright, var(--stars)),
+      -2px 0 0 var(--star-bright, var(--stars)),
+      2px 0 0 var(--star-bright, var(--stars)),
+      -1px -1px 0 var(--stars),
+      1px -1px 0 var(--stars),
+      -1px 1px 0 var(--stars),
+      1px 1px 0 var(--stars);
+    transform: scale(calc(2 * var(--scene-scale)));
+    z-index: 6;
+  }
+  .star-big-1 { top: 14%; left: 30%; }
+  .star-big-2 { top: 20%; right: 22%; }
+
+  /* Night clouds */
+  .night-cloud.night-only {
+    width: 16px; height: 8px;
+    background: var(--night-cloud-a);
+    box-shadow:
+      3px 0 0 var(--night-cloud-a),
+      6px -2px 0 var(--night-cloud-a),
+      9px 0 0 var(--night-cloud-a),
+      4px 2px 0 var(--night-cloud-b),
+      7px 2px 0 var(--night-cloud-b);
+    transform: scale(calc(4 * var(--scene-scale)));
+    z-index: 7;
+  }
+  .night-cloud-l { top: 18%; left: 6%; }
+  .night-cloud-r { top: 24%; right: 8%; }
+  .night-cloud-l-2 { top: 35%; left: 2%; transform: scale(calc(3 * var(--scene-scale))); }
+
+  /* Shooting star */
+  .shooting-star.night-only {
+    width: 4px; height: 4px;
+    background: var(--shooting-star, #fff8ff);
+    box-shadow:
+      4px 2px 0 color-mix(in srgb, var(--shooting-star, #fff8ff), transparent 20%),
+      8px 4px 0 color-mix(in srgb, var(--shooting-star, #fff8ff), transparent 40%),
+      12px 6px 0 color-mix(in srgb, var(--shooting-star, #fff8ff), transparent 60%),
+      16px 8px 0 color-mix(in srgb, var(--shooting-star, #fff8ff), transparent 80%);
+    transform: scale(calc(2 * var(--scene-scale)));
+    top: 16%; left: 38%;
+    z-index: 8;
+  }
+
+  /* Night mountains (back layers) */
+  .night-mountain.night-only {
+    z-index: 2;
+  }
+
+  .night-mountain-far-l {
+    width: 200px; height: 130px;
+    bottom: 24%; left: -8%;
+    background: var(--night-mountain-far, #0a0a18);
+    clip-path: polygon(
+      0% 100%, 15% 60%, 35% 35%, 50% 50%, 65% 25%, 80% 45%, 100% 55%, 100% 100%
+    );
+    transform: scale(calc(2.5 * var(--scene-scale)));
+  }
+
+  .night-mountain-far-r {
+    width: 200px; height: 130px;
+    bottom: 24%; right: -8%;
+    background: var(--night-mountain-far, #0a0a18);
+    clip-path: polygon(
+      0% 55%, 20% 45%, 35% 25%, 50% 50%, 65% 35%, 85% 60%, 100% 100%, 0% 100%
+    );
+    transform: scale(calc(2.5 * var(--scene-scale)));
+  }
+
+  .night-mountain-mid-l {
+    width: 180px; height: 110px;
+    bottom: 18%; left: -2%;
+    background: var(--night-mountain-mid, #141428);
+    clip-path: polygon(
+      0% 100%, 20% 55%, 40% 70%, 55% 40%, 75% 65%, 100% 50%, 100% 100%
+    );
+    transform: scale(calc(2.5 * var(--scene-scale)));
+    z-index: 3;
+  }
+
+  .night-mountain-mid-r {
+    width: 180px; height: 110px;
+    bottom: 18%; right: -2%;
+    background: var(--night-mountain-mid, #141428);
+    clip-path: polygon(
+      0% 50%, 25% 65%, 45% 40%, 60% 70%, 80% 55%, 100% 100%, 0% 100%
+    );
+    transform: scale(calc(2.5 * var(--scene-scale)));
+    z-index: 3;
+  }
+
+  /* Skyline / ground at night */
+  .skyline.night-only {
+    position: absolute;
+    left: 0; right: 0; bottom: 0; height: 20%;
+    background:
+      linear-gradient(to top,
+        var(--skyline-a) 0%,
+        var(--skyline-b) 60%,
+        var(--skyline-c) 100%);
+    z-index: 4;
+  }
+
+  .skyline.night-only::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 30%; height: 12%;
+    background: repeating-linear-gradient(
+      to right,
+      transparent 0 14px,
+      var(--window-glow-a) 14px 16px,
+      transparent 16px 32px,
+      var(--window-glow-b) 32px 33px
+    );
+    opacity: 0.6;
+  }
+
+  /* Aurora (for winter/special nights) */
+  .aurora.night-only {
+    position: absolute;
+    top: 5%; left: 0; right: 0; height: 35%;
+    background:
+      linear-gradient(120deg,
+        transparent 0%,
+        var(--aurora-a, transparent) 20%,
+        var(--aurora-b, transparent) 40%,
+        var(--aurora-c, transparent) 60%,
+        transparent 100%);
+    opacity: 0.4;
+    z-index: 3;
+    display: none; /* Only visible in winter */
+  }
+
+  /* Fireflies (for summer nights) */
+  .firefly.night-only {
+    width: 2px; height: 2px;
+    background: var(--firefly, #ffee88);
+    box-shadow: 0 0 3px 1px var(--firefly-glow, rgba(255, 238, 100, 0.5));
+    border-radius: 50%;
+    transform: scale(calc(2 * var(--scene-scale)));
+    z-index: 9;
+    display: none; /* Only visible in summer */
+  }
+  .firefly-1 { top: 55%; left: 15%; }
+  .firefly-2 { top: 60%; right: 18%; }
+  .firefly-3 { top: 52%; left: 25%; }
+  .firefly-4 { top: 58%; right: 28%; }
+
+  /* Night petals (spring) */
+  .petal.night-only {
+    width: 3px; height: 3px;
+    background: var(--petal, #d4a0c0);
+    transform: rotate(20deg) scale(calc(2 * var(--scene-scale)));
+    z-index: 8;
+    display: none; /* Only visible in spring */
+  }
+  .petal-l { top: 30%; left: 12%; }
+  .petal-r { top: 25%; right: 10%; }
+
+  /* ============================================
+     SEASONAL PALETTES - DAY SCENES
+     ============================================ */
+
+  /* ========== SPRING DAY ========== */
+  .scene-spring-day {
+    --sky-top: #a8e0ff;
+    --sky-mid: #c5ebff;
+    --sky-horizon: #e8f8e8;
+    --sky-bottom: #d0f0d0;
+
+    --sun: #fff176;
+    --sun-glow: #ffeb3b;
+    --sun-outer: rgba(255, 235, 59, 0.2);
+    --sun-ray: rgba(255, 245, 150, 0.12);
+
+    --cloud-light: #ffffff;
+    --cloud-shadow: #e0f0ff;
+
+    --mountain-far: #7eb896;
+    --mountain-mid: #8fc9a0;
+    --hill-front: #a5dbb0;
+
+    --ground-light: #90d890;
+    --ground-mid: #7ccc7c;
+    --ground-dark: #60b860;
+
+    --tree-top: #4a9c5a;
+    --tree-top-alt: #5aac6a;
+    --tree-trunk: #8b6840;
+    --bush: #55a565;
+
+    --flower-a: #ff8cb8;
+    --flower-b: #ffb4d0;
+    --stem: #5a9a5a;
+
+    --bird: #4a6a8a;
+  }
+
+  /* Show spring day flowers more prominently */
+  .scene-spring-day .flower.day-only { display: block; }
+
+  /* ========== SUMMER DAY ========== */
+  .scene-summer-day {
+    --sky-top: #4ab8ff;
+    --sky-mid: #7dcfff;
+    --sky-horizon: #b8e8b0;
+    --sky-bottom: #88d888;
+
+    --sun: #ffdd00;
+    --sun-glow: #ffcc00;
+    --sun-outer: rgba(255, 220, 0, 0.25);
+    --sun-ray: rgba(255, 230, 100, 0.15);
+
+    --cloud-light: #ffffff;
+    --cloud-shadow: #d8f0ff;
+
+    --mountain-far: #4a8855;
+    --mountain-mid: #5a9865;
+    --hill-front: #70a870;
+
+    --ground-light: #70c870;
+    --ground-mid: #5cb85c;
+    --ground-dark: #48a848;
+
+    --tree-top: #2a7a3a;
+    --tree-top-alt: #3a8a4a;
+    --tree-trunk: #7a5830;
+    --bush: #3a8a4a;
+
+    --flower-a: #ff5588;
+    --flower-b: #ffdd55;
+    --stem: #4a8a4a;
+
+    --bird: #2a4a6a;
+  }
+
+  .scene-summer-day .flower.day-only { display: block; }
+
+  /* ========== AUTUMN DAY ========== */
+  .scene-autumn-day {
+    --sky-top: #ffcc88;
+    --sky-mid: #ffe0a8;
+    --sky-horizon: #f0d8b0;
+    --sky-bottom: #d8c090;
+
+    --sun: #ffb840;
+    --sun-glow: #ffa020;
+    --sun-outer: rgba(255, 160, 32, 0.2);
+    --sun-ray: rgba(255, 200, 100, 0.12);
+
+    --cloud-light: #fff8f0;
+    --cloud-shadow: #ffe8d0;
+
+    --mountain-far: #9a7050;
+    --mountain-mid: #aa8060;
+    --hill-front: #b89068;
+
+    --ground-light: #c8a070;
+    --ground-mid: #b89060;
+    --ground-dark: #a88050;
+
+    --tree-top: #cc6620;
+    --tree-top-alt: #dd7730;
+    --tree-trunk: #6a4020;
+    --bush: #bb7730;
+
+    --flower-a: #dd6630;
+    --flower-b: #ffaa60;
+    --stem: #7a5a3a;
+
+    --leaf: #dd5520;
+    --bird: #5a4030;
+  }
+
+  .scene-autumn-day .flower.day-only { display: block; }
+  .scene-autumn-day .leaf.day-only { display: block; }
+
+  /* ========== WINTER DAY ========== */
+  .scene-winter-day {
+    --sky-top: #b8d8f0;
+    --sky-mid: #d0e8f8;
+    --sky-horizon: #e8f0f8;
+    --sky-bottom: #d8e8f4;
+
+    --sun: #fff8e0;
+    --sun-glow: #f0e8c0;
+    --sun-outer: rgba(255, 248, 220, 0.15);
+    --sun-ray: rgba(255, 250, 230, 0.1);
+
+    --cloud-light: #ffffff;
+    --cloud-shadow: #d8e8f8;
+
+    --mountain-far: #8098b0;
+    --mountain-mid: #90a8c0;
+    --hill-front: #a0b8d0;
+
+    --ground-light: #e8f0f8;
+    --ground-mid: #d8e8f4;
+    --ground-dark: #c8d8e8;
+
+    --tree-top: #90b0c8;
+    --tree-top-alt: #a0c0d8;
+    --tree-trunk: #607080;
+    --bush: #80a0b8;
+
+    --flower-a: #d0e0f0;
+    --flower-b: #e0f0ff;
+    --stem: #90a0b0;
+
+    --snow: #f8fcff;
+    --snowflake: #ffffff;
+
+    --bird: #4a6078;
+  }
+
+  .scene-winter-day .flower.day-only { display: none; }
+  .scene-winter-day .snowbank.day-only { display: block; }
+  .scene-winter-day .snowflake.day-only { display: block; }
+
+  /* ============================================
+     SEASONAL PALETTES - NIGHT SCENES
+     ============================================ */
+
+  /* ========== SPRING NIGHT ========== */
+  .scene-spring-night {
+    --night-top: #0a1828;
+    --night-mid: #152838;
+    --night-bottom: #203848;
+    --night-accent-a: rgba(100, 180, 160, 0.15);
+    --night-accent-b: rgba(120, 200, 180, 0.12);
+
+    --moon: #e0fff0;
+    --moon-rim-b: #ffffff;
+    --moon-crater: rgba(150, 200, 180, 0.3);
+    --moon-glow-inner: rgba(200, 255, 230, 0.15);
+    --moon-glow-outer: rgba(200, 255, 230, 0.08);
+    --moon-halo: rgba(200, 255, 230, 0.15);
+
+    --stars: #d0ffee;
+    --star-bright: #e8fff8;
+    --shooting-star: #c0ffe0;
+
+    --night-cloud-a: #1a3040;
+    --night-cloud-b: #254050;
+
+    --night-mountain-far: #0a1820;
+    --night-mountain-mid: #122830;
+
+    --skyline-a: #081418;
+    --skyline-b: #0c1c20;
+    --skyline-c: #102428;
+    --window-glow-a: rgba(150, 255, 200, 0.6);
+    --window-glow-b: rgba(150, 255, 200, 0.4);
+
+    --petal: #c8a0b8;
+  }
+
+  .scene-spring-night .petal.night-only { display: block; }
+
+  /* ========== SUMMER NIGHT ========== */
+  .scene-summer-night {
+    --night-top: #10082a;
+    --night-mid: #201048;
+    --night-bottom: #302060;
+    --night-accent-a: rgba(150, 100, 200, 0.2);
+    --night-accent-b: rgba(100, 80, 160, 0.18);
+
+    --moon: #fff8ee;
+    --moon-rim-b: #ffffff;
+    --moon-crater: rgba(200, 180, 150, 0.25);
+    --moon-glow-inner: rgba(255, 240, 210, 0.18);
+    --moon-glow-outer: rgba(255, 240, 210, 0.1);
+    --moon-halo: rgba(255, 240, 210, 0.15);
+
+    --stars: #f0e0ff;
+    --star-bright: #fff0ff;
+    --shooting-star: #ffe0ff;
+
+    --night-cloud-a: #30205a;
+    --night-cloud-b: #402870;
+
+    --night-mountain-far: #100820;
+    --night-mountain-mid: #181030;
+
+    --skyline-a: #18082a;
+    --skyline-b: #200c38;
+    --skyline-c: #281048;
+    --window-glow-a: rgba(255, 200, 100, 0.65);
+    --window-glow-b: rgba(255, 200, 100, 0.45);
+
+    --firefly: #ffee66;
+    --firefly-glow: rgba(255, 238, 100, 0.6);
+  }
+
+  .scene-summer-night .firefly.night-only { display: block; }
+
+  /* ========== AUTUMN NIGHT ========== */
+  .scene-autumn-night {
+    --night-top: #1a1008;
+    --night-mid: #2a1810;
+    --night-bottom: #382018;
+    --night-accent-a: rgba(180, 100, 60, 0.15);
+    --night-accent-b: rgba(140, 80, 50, 0.12);
+
+    --moon: #fff0d0;
+    --moon-rim-b: #fff8e0;
+    --moon-crater: rgba(200, 150, 100, 0.3);
+    --moon-glow-inner: rgba(255, 220, 150, 0.2);
+    --moon-glow-outer: rgba(255, 220, 150, 0.1);
+    --moon-halo: rgba(255, 200, 120, 0.18);
+
+    --stars: #ffe8c0;
+    --star-bright: #fff0d0;
+    --shooting-star: #ffd080;
+
+    --night-cloud-a: #382820;
+    --night-cloud-b: #483830;
+
+    --night-mountain-far: #180c08;
+    --night-mountain-mid: #241410;
+
+    --skyline-a: #1a0c08;
+    --skyline-b: #20100a;
+    --skyline-c: #28180e;
+    --window-glow-a: rgba(255, 180, 100, 0.65);
+    --window-glow-b: rgba(255, 180, 100, 0.45);
+  }
+
+  /* ========== WINTER NIGHT ========== */
+  .scene-winter-night {
+    --night-top: #040818;
+    --night-mid: #081428;
+    --night-bottom: #0c1c38;
+    --night-accent-a: rgba(80, 120, 180, 0.15);
+    --night-accent-b: rgba(60, 100, 160, 0.12);
+
+    --moon: #f0f8ff;
+    --moon-rim-b: #ffffff;
+    --moon-crater: rgba(180, 200, 220, 0.25);
+    --moon-glow-inner: rgba(200, 230, 255, 0.2);
+    --moon-glow-outer: rgba(200, 230, 255, 0.1);
+    --moon-halo: rgba(180, 220, 255, 0.18);
+
+    --stars: #e0f0ff;
+    --star-bright: #f0f8ff;
+    --shooting-star: #d0e8ff;
+
+    --night-cloud-a: #102030;
+    --night-cloud-b: #183040;
+
+    --night-mountain-far: #040810;
+    --night-mountain-mid: #081018;
+
+    --skyline-a: #040810;
+    --skyline-b: #060c14;
+    --skyline-c: #081018;
+    --window-glow-a: rgba(150, 200, 255, 0.6);
+    --window-glow-b: rgba(150, 200, 255, 0.4);
+
+    --aurora-a: rgba(80, 200, 160, 0.3);
+    --aurora-b: rgba(100, 180, 220, 0.25);
+    --aurora-c: rgba(140, 160, 200, 0.2);
+  }
+
+  .scene-winter-night .aurora.night-only { display: block; }
+}
+
+/* -----------------------------
+   UTILITIES (optional)
+------------------------------*/
+@layer utilities {
+  .hide-on-mobile { display: block; }
+  @media (max-width: 700px) {
+    .hide-on-mobile { display: none !important; }
+  }
+}
