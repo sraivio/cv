@@ -100,6 +100,11 @@ function applyInitialThemeFromHelsinkiTime() {
 	const season = resolveSeasonFromMonth(month);
 	const mode = resolveModeFromHour(hour);
 	applyTheme(season, mode, true);
+
+	// Sync browse index so "next" continues from the current real-time theme
+	currentThemeIndex = ALL_THEMES.findIndex(
+		(t) => t.season === season && t.mode === mode
+	);
 }
 
 function nextTheme() {
