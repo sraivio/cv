@@ -135,3 +135,73 @@ bindTabs();
 if (shuffleButtonElement) {
 	shuffleButtonElement.addEventListener("click", nextTheme);
 }
+
+// ============================================
+// SKILL BUBBLES - Mouse avoidance with collision
+// ============================================
+// SKILL BUBBLES - Static vertical list, best skills top
+(function initSkillBubbles() {
+	const container = document.getElementById("skills-bubbles");
+	if (!container) return;
+
+	// Get bubbles and sort by skill level (descending)
+	const bubbles = Array.from(container.querySelectorAll(".skill-bubble"));
+	if (bubbles.length === 0) return;
+
+	bubbles.sort((a, b) => {
+		const levelA = parseInt(a.getAttribute("data-level"), 10) || 0;
+		const levelB = parseInt(b.getAttribute("data-level"), 10) || 0;
+		return levelB - levelA;
+	});
+
+	// Remove all children from container and re-append in sorted order with level separators
+	while (container.firstChild) container.removeChild(container.firstChild);
+
+	let lastLevel = null;
+	bubbles.forEach(bubble => {
+		const level = parseInt(bubble.getAttribute("data-level"), 10) || 0;
+		if (lastLevel !== null && level !== lastLevel) {
+			const spacer = document.createElement("div");
+			spacer.className = "skill-level-spacer";
+			container.appendChild(spacer);
+		}
+		container.appendChild(bubble);
+		lastLevel = level;
+	});
+
+	// Set static vertical list style
+	bubbles.forEach(bubble => {
+		bubble.style.position = "static";
+		bubble.style.left = "";
+		bubble.style.top = "";
+		bubble.style.margin = "0.5rem 0.5rem";
+		bubble.style.width = "auto";
+		bubble.style.maxWidth = "320px";
+		bubble.style.display = "inline-flex";
+		bubble.style.verticalAlign = "top";
+	});
+	})();
+
+// EXPERIENCE CARDS - Sort by end date, "ongoing" first
+// ====================================================
+(function sortExperienceCards() {
+	const container = document.getElementById("experience-cards");
+	if (!container) return;
+
+	const cards = Array.from(container.querySelectorAll(".experience-card"));
+	if (cards.length === 0) return;
+
+	cards.sort((a, b) => {
+		const endA = (a.getAttribute("data-end") || "").toLowerCase();
+		const endB = (b.getAttribute("data-end") || "").toLowerCase();
+
+		if (endA === "ongoing" && endB !== "ongoing") return -1;
+		if (endB === "ongoing" && endA !== "ongoing") return 1;
+		if (endA === "ongoing" && endB === "ongoing") return 0;
+
+		// Parse YYYY-MM and compare descending (newest first)
+		return endB.localeCompare(endA);
+	});
+
+	cards.forEach(card => container.appendChild(card));
+})();

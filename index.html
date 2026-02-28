@@ -107,12 +107,12 @@
 			<article class="cv-panel" id="cv-panel">
 				<header class="card-top">
 					<div class="identity-banner">
-						<h1>Your Name</h1>
-						<p>Role / Professional Title</p>
+						<h1>Pauliina Raivio</h1>
+						<p>Full Stack Software Developer</p>
 					</div>
 
 					<nav class="tab-list" aria-label="CV sections" role="tablist">
-						<button class="tab-button is-active" type="button" role="tab" aria-selected="true" aria-controls="tab-profile" id="btn-profile" data-tab="profile">Profile</button>
+						<button class="tab-button is-active" type="button" role="tab" aria-selected="true" aria-controls="tab-profile" id="btn-profile" data-tab="profile">About</button>
 						<button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-experience" id="btn-experience" data-tab="experience">Experience</button>
 						<button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-skills" id="btn-skills" data-tab="skills">Skills</button>
 					</nav>
@@ -120,27 +120,167 @@
 
 				<div class="tab-content" id="tab-content">
 					<section class="tab-panel is-active" id="tab-profile" role="tabpanel" aria-labelledby="btn-profile" data-tab-panel="profile">
-						<h2>Profile</h2>
+						<h2>About</h2>
 						<p>
-							Short profile text placeholder.
-						</p>
+                            Since I don’t want to duplicate what’s already on LinkedIn, <a href="https://www.linkedin.com/in/pauliinar/">you can find my up-to-date professional 
+                            summary there</a>. The About section on LinkedIn is tailored specifically for recruiters and potential employers.
+                        </p>
+                        <p>
+                            On this site, however, I share information that isn’t visible there. The Experience tab contains more detailed descriptions of my work and 
+                            educational background, and the Skills page enlightens the depth behind the skills I list on LinkedIn.
+                        </p>
+                        <p>
+                            Here’s also a bit more in depth description of me as a person.
+                        </p>
+                        <p>
+                            My strength, and occasionally my weakness, is my intellectual curiosity. I’m drawn to many fields, which means my expertise isn’t extremely 
+                            deep in just one narrow area. Instead, it’s distributed. I know enough about many things to see patterns, connections, and possibilities others might miss. 
+                            To say it more bluntly, I'm a master of everything and nothing... Which, in practice, turns out to be surprisingly useful.
+                        </p>
+                        <p>
+                            In my free time, I enjoy music. My taste varies from J-pop to thrash metal. I also sing in a choir. I occasionally play PC or PlayStation games, 
+                            and I have a soft spot for animated series with extremely dark humor. If you're really lucky, you might spot me running around Töölönlahti.
+                        </p>
+                        <h3>
+                            About this page
+                        </h3>
+                        <p>
+                            This CV project is an unholy union of AI and my own skills. The code is pretty much vibed, but the (easy) decision to host in GitHub Pages as SPA, 
+                            UX decisions, and design direction are intentionally mine. 
+                        </p>
+                        <p>
+                            The page is still very much a work in progress.
+                        </p>
+                        <p>
+                            Currently, the layout responds only to the season and time of day in Helsinki. Next steps on the roadmap are:
+                        </p>
+                        <ul>
+                            <li>
+                                Integrating a weather API and dynamically adapting the UI to real-time conditions in Helsinki. The meteorology-inspired theme 
+                                reflects an ongoing personal interest, which you can find also mentioned in the Experience section if you read it carefully.
+                            </li>
+                            <li>
+                                Enhanching accessibility features. Now the page should be fairly usable for all device sizes, but I acknowledge that the Skills cannot be copied, 
+                                the keyboard navigation is not perfect and I haven't paid attention to any screenreader support or things like that. 
+                            </li>
+                        <ul>
 					</section>
 
 					<section class="tab-panel" id="tab-experience" role="tabpanel" aria-labelledby="btn-experience" data-tab-panel="experience">
 						<h2>Experience</h2>
-						<ul>
-							<li>Experience entry placeholder</li>
-							<li>Experience entry placeholder</li>
-						</ul>
+						<div class="experience-cards" id="experience-cards">
+
+							<article class="experience-card" data-end="ongoing">
+								<div class="experience-card-header">
+									<h3 class="experience-card-title">Digia Oyj</h3>
+									<span class="experience-card-time">Feb 2019 - Ongoing</span>
+								</div>
+								<p class="experience-card-subtitle">Software Developer</p>
+								<p class="experience-card-desc">Working as a full-stack developer on various client projects, focusing on Java/Spring Boot backends and modern frontend frameworks.</p>
+							</article>
+
+                            <article class="experience-card" data-end="2020-06">
+								<div class="experience-card-header">
+									<h3 class="experience-card-title">Aalto University</h3>
+									<span class="experience-card-time">Sep 2019 - Jun 2020</span>
+								</div>
+								<p class="experience-card-subtitle">Master's Program, Human-Computer Interaction - Discontinued</p>
+								<p class="experience-card-desc">I started a Master's Degree in HCI, but after realizing that my job profile in Digia, focusing mostly in back-end services, did not complement my studies that well, I decided to focus on working full-time. That was a good decision. Also, I'm still very enthusiastic about UX Design.</p>
+							</article>
+
+                            <article class="experience-card" data-end="2019-07">
+								<div class="experience-card-header">
+									<h3 class="experience-card-title">Lake Forest College</h3>
+									<span class="experience-card-time">Sep 2018 - Dec 2018</span>
+								</div>
+								<p class="experience-card-subtitle">ISEP Exchange Program in Lake Forest College, Illinois, USA</p>
+								<p class="experience-card-desc">As a part of my studies in Tampere University, I had an exchange period in the US. During my exchange I was supposed to take courses related to my major, but since all the CS classes were already full with actual Foresters, I ended up taking some art, design, psychology and environmental studies instead. I don't mind.</p>
+							</article>
+
+							<article class="experience-card" data-end="2019-06">
+								<div class="experience-card-header">
+									<h3 class="experience-card-title">Tampere University</h3>
+									<span class="experience-card-time">Sep 2015 - Jun 2019</span>
+								</div>
+								<p class="experience-card-subtitle">Bachelor of Science in Computer Science</p>
+								<p class="experience-card-desc">I have graduated as a Bachelor of Science in Computer Science. As my minor subjects I had Information Technology & Communication from Tampere Uni, and Chemistry as credit transfer from my prior Univesity studies in Helsinki.</p>
+							</article>
+                            
+                            <article class="experience-card" data-end="2015-06">
+								<div class="experience-card-header">
+									<h3 class="experience-card-title">University of Helsinki</h3>
+									<span class="experience-card-time">Sep 2011 - Jun 2015</span>
+								</div>
+								<p class="experience-card-subtitle">Bachelor of Science in Chemistry - Discontinued</p>
+								<p class="experience-card-desc">I had the dream of becoming a meteorologist, but as I did not get in the Physics major, I ended up here. During these years I took various courses including chemistry, physics, meteorology, geology, computer science and so on. After the experimenting I decided to change the course a bit and apply elsewhere.</p>
+							</article>
+
+                            <article class="experience-card" data-end="2015-05">
+								<div class="experience-card-header">
+									<h3 class="experience-card-title">Summer Job as Cemetery Greenworker</h3>
+									<span class="experience-card-time">2014 - 2018</span>
+								</div>
+								<p class="experience-card-desc">During five summers I had a job as cemetery greenworker. 2014, 2015 and 2018 my site was Helsinki Malmi Cemetery, and 2016, 2017 Tampere Kalevankangas Cemetary. Beware of Bones.</p>
+							</article>
+
+						</div>
 					</section>
 
 					<section class="tab-panel" id="tab-skills" role="tabpanel" aria-labelledby="btn-skills" data-tab-panel="skills">
-						<h2>Skills</h2>
-						<ul>
-							<li>Skill placeholder</li>
-							<li>Skill placeholder</li>
-							<li>Skill placeholder</li>
-						</ul>
+						<h2>Better skill, stronger glow</h2>
+						
+						<!-- Floating skill bubbles -->
+						<div class="skills-bubbles" id="skills-bubbles">
+							<!-- Skills with level: 3=experienced, 2=intermediate, 1=beginner -->
+                            <span class="skill-bubble" data-level="3">Finnish (Native)</span>
+                            <span class="skill-bubble" data-level="3">English (Fluent)</span>
+							<span class="skill-bubble" data-level="3">Java</span>
+							<span class="skill-bubble" data-level="3">Spring Boot</span>
+							<span class="skill-bubble" data-level="3">SQL</span>
+							<span class="skill-bubble" data-level="3">API Development</span>
+                            <span class="skill-bubble" data-level="3">Back-End Development</span>
+							<span class="skill-bubble" data-level="3">REST</span>
+							<span class="skill-bubble" data-level="3">Git</span>
+							<span class="skill-bubble" data-level="3">Jira</span>
+                            <span class="skill-bubble" data-level="3">Diversity, Equality, and Inclusion (DEI)</span>
+                            <span class="skill-bubble" data-level="3">Requirements Analysis</span>
+							<span class="skill-bubble" data-level="3">Docker</span>
+                            <span class="skill-bubble" data-level="3">Teamwork</span>
+                            <span class="skill-bubble" data-level="3">Customer Communication</span>
+                            <span class="skill-bubble" data-level="3">Incident Handling</span>
+							<span class="skill-bubble" data-level="3">HTML5</span>
+							<span class="skill-bubble" data-level="2">Kubernetes</span>
+                            <span class="skill-bubble" data-level="2">Microservices</span>
+                            <span class="skill-bubble" data-level="2">Telecommunications Systems</span>
+                            <span class="skill-bubble" data-level="2">Full-Stack Development</span>
+                            <span class="skill-bubble" data-level="2">Front-End Development</span>
+							<span class="skill-bubble" data-level="2">JavaScript</span>
+							<span class="skill-bubble" data-level="2">TypeScript</span>
+							<span class="skill-bubble" data-level="2">Node.js</span>
+							<span class="skill-bubble" data-level="2">NestJS</span>
+							<span class="skill-bubble" data-level="2">React</span>
+							<span class="skill-bubble" data-level="2">CSS</span>
+                            <span class="skill-bubble" data-level="2">End to End Delivery</span>
+                            <span class="skill-bubble" data-level="2">Integration Development</span>
+							<span class="skill-bubble" data-level="2">Efecte</span>
+							<span class="skill-bubble" data-level="2">ServiceNow</span>
+							<span class="skill-bubble" data-level="1">Apache Kafka</span>
+							<span class="skill-bubble" data-level="1">Kotlin</span>
+                            <span class="skill-bubble" data-level="1">Google Cloud</span>
+                            <span class="skill-bubble" data-level="1">UX Design</span>
+                            <span class="skill-bubble" data-level="1">Accessibility</span>
+                            <span class="skill-bubble" data-level="1">Geoserver</span>
+							<span class="skill-bubble" data-level="1">Neo4j &amp; Cypher</span>
+							<span class="skill-bubble" data-level="1">ElasticSearch</span>
+							<span class="skill-bubble" data-level="1">Microsoft Azure</span>
+							<span class="skill-bubble" data-level="1">Azure Logic Apps</span>
+							<span class="skill-bubble" data-level="1">C#</span>
+							<span class="skill-bubble" data-level="1">R</span>
+							<span class="skill-bubble" data-level="1">IBM Datapower</span>
+							<span class="skill-bubble" data-level="1">Splunk</span>
+							<span class="skill-bubble" data-level="1">PHP</span>
+							<span class="skill-bubble" data-level="1">MML</span>
+						</div>
 					</section>
 				</div>
 
