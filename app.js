@@ -52,7 +52,7 @@ function getHelsinkiDateParts() {
 }
 
 function resolveSeasonFromMonth(month) {
-	if (month >= 3 && month <= 5) {
+	if (month >= 4 && month <= 5) {
 		return "spring";
 	}
 	if (month >= 6 && month <= 8) {
